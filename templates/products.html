@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Products - DashPro{% endblock %}
+
+{% block content %}
+<div class="p-8 space-y-8 flex-1">
+    
+    <!-- Top Bar Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Products</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Manage and organize your products</p>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <!-- Search Bar -->
+            <div class="relative min-w-[280px]">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </span>
+                <input id="products-search-input" type="text" placeholder="Search..." class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition shadow-sm">
+            </div>
+
+            <!-- Filter button -->
+            <button class="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-medium text-sm px-4 py-2.5 rounded-xl shadow-sm hover:bg-slate-50 transition">
+                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                <span>Filter</span>
+            </button>
+
+            <!-- Add Product primary button -->
+            <button onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-5 py-2.5 rounded-xl shadow-md shadow-blue-500/20 transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Add Product</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters & Controls Bar -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-3">
+            <!-- All Categories -->
+            <select id="filter-category" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none shadow-sm">
+                <option value="all">All Categories</option>
+                <option value="Buku">Buku</option>
+                <option value="Merchandise">Merchandise</option>
+                <option value="Pakaian">Pakaian</option>
+                <option value="Catkul">Catkul</option>
+            </select>
+
+            <!-- All Status -->
+            <select id="filter-status" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none shadow-sm">
+                <option value="all">All Status</option>
+                <option value="In Stock">In Stock</option>
+                <option value="Low Stock">Low Stock</option>
+                <option value="Out of Stock">Out of Stock</option>
+            </select>
+
+            <!-- Counter -->
+            <span id="products-total-count" class="text-xs font-semibold text-slate-400 ml-2">128 Products</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Sort by -->
+            <div class="flex items-center gap-2 text-xs text-slate-500">
+                <span>Sort by :</span>
+                <select class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 font-medium text-slate-700 dark:text-slate-300 focus:outline-none shadow-sm">
+                    <option>Lia</option>
+                    <option>Price (Low to High)</option>
+                    <option>Price (High to Low)</option>
+                    <option>Name (A-Z)</option>
+                </select>
+            </div>
+
+            <!-- Grid / List Switcher -->
+            <div class="bg-slate-100 dark:bg-slate-800 p-1 rounded-xl flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+                <button id="btn-view-grid" class="p-1.5 rounded-lg bg-blue-600 text-white shadow-sm transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                </button>
+                <button id="btn-view-list" class="p-1.5 rounded-lg bg-white text-slate-600 hover:bg-slate-50 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Cards Container (Grid / List) -->
+    <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+        <!-- Loaded via JS -->
+    </div>
+
+    <!-- Pagination Controls Footer -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+        <div class="flex items-center gap-2" id="products-pagination-numbers">
+            <!-- Loaded via JS -->
+        </div>
+
+        <select class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-600 dark:text-slate-300">
+            <option>8 per page</option>
+            <option>10 per page</option>
+            <option>20 per page</option>
+        </select>
+    </div>
+
+</div>
+
+<!-- Modal Form Add Product -->
+<div id="add-product-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-700">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Tambah Produk Baru</h3>
+            <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+        </div>
+
+        <form id="add-product-form" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nama Produk</label>
+                <input type="text" name="name" required placeholder="Contoh: Pengantar Geofisika" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Jenis Produk</label>
+                    <input type="text" name="product_type" placeholder="Buku Perkuliahan" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Kategori</label>
+                    <select name="category" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="Buku">Buku</option>
+                        <option value="Merchandise">Merchandise</option>
+                        <option value="Pakaian">Pakaian</option>
+                        <option value="Catkul">Catkul</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Harga (Rp)</label>
+                    <input type="number" name="price" required placeholder="120000" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Jumlah Stok</label>
+                    <input type="number" name="stock" required placeholder="100" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-3">
+                <button type="button" onclick="closeAddModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl">Batal</button>
+                <button type="submit" class="px-5 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md">Simpan Produk</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/products.js') }}"></script>
+{% endblock %}
